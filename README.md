@@ -5,12 +5,11 @@ Aplicación web para la gestión y combate de equipos Pokémon.
 ## Tecnologías Utilizadas
 
 - React 18
-- Material-UI 7
+- Material-UI 5
 - TanStack Query (React Query)
 - Zustand
 - React Router DOM
-- React Beautiful DnD
-- ESLint
+- @hello-pangea/dnd (fork mantenido de React Beautiful DnD)
 
 ## Estructura del Proyecto
 
@@ -102,16 +101,6 @@ La aplicación utiliza React Router DOM para la navegación entre las diferentes
 - `npm start`: Inicia el servidor de desarrollo
 - `npm test`: Ejecuta los tests
 - `npm run build`: Genera la versión de producción
-- `npm run lint`: Ejecuta ESLint para verificar el código
-
-### Convenciones de Código
-
-El proyecto utiliza ESLint con una configuración personalizada que incluye:
-
-- Reglas para React y hooks
-- Ordenamiento de importaciones
-- Formateo consistente
-- Buenas prácticas de JavaScript/React
 
 ## API
 
