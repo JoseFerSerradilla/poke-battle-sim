@@ -1,5 +1,5 @@
+import { Box, Container, Link, Typography } from '@mui/material';
 import React from 'react';
-import { Box, Container, Typography, Link } from '@mui/material';
 
 function Footer() {
   return (
@@ -18,9 +18,7 @@ function Footer() {
       <Container maxWidth="lg">
         <Typography variant="body2" color="text.secondary" align="center">
           {'Desarrollado con '}
-          <span role="img" aria-label="love">
-            ❤️
-          </span>
+          <span role="img" aria-label="love">❤️</span>
           {' usando '}
           <Link color="inherit" href="https://pokeapi.co/" target="_blank" rel="noopener">
             PokeAPI

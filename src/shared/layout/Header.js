@@ -1,24 +1,32 @@
-import React from 'react';
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
   Box,
-  Toolbar,
+  Container,
+  FormControlLabel,
   IconButton,
-  Typography,
   Menu,
   MenuItem,
-  Container,
   Switch,
-  FormControlLabel,
+  Toolbar,
+  Typography,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import useStore from '../store/store';
 
-const pages = ['Lista Pokémon', 'Constructor de Equipo', 'Simulador de Batalla'];
+const ROUTES = [
+  { name: 'Lista Pokémon', path: '/' },
+  { name: 'Constructor de Equipo', path: '/teams' },
+  { name: 'Simulador de Batalla', path: '/battle' },
+];
 
 function Header() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElNav, setAnchorElNav] = useState(null);
   const { darkMode, toggleDarkMode } = useStore();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -26,6 +34,11 @@ function Header() {
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    handleCloseNavMenu();
   };
 
   return (
@@ -42,7 +55,9 @@ function Header() {
               fontWeight: 700,
               color: 'inherit',
               textDecoration: 'none',
+              cursor: 'pointer',
             }}
+            onClick={() => navigate('/')}
           >
             POKE BATTLE
           </Typography>
@@ -77,9 +92,13 @@ function Header() {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+              {ROUTES.map((route) => (
+                <MenuItem
+                  key={route.path}
+                  onClick={() => handleNavigate(route.path)}
+                  selected={location.pathname === route.path}
+                >
+                  <Typography textAlign="center">{route.name}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -96,20 +115,27 @@ function Header() {
               fontWeight: 700,
               color: 'inherit',
               textDecoration: 'none',
+              cursor: 'pointer',
             }}
+            onClick={() => navigate('/')}
           >
             POKE BATTLE
           </Typography>
 
           {/* Desktop menu */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
+            {ROUTES.map((route) => (
               <Typography
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ mx: 2, color: 'white', cursor: 'pointer' }}
+                key={route.path}
+                onClick={() => handleNavigate(route.path)}
+                sx={{
+                  mx: 2,
+                  color: 'white',
+                  cursor: 'pointer',
+                  borderBottom: location.pathname === route.path ? '2px solid white' : 'none',
+                }}
               >
-                {page}
+                {route.name}
               </Typography>
             ))}
           </Box>
@@ -123,7 +149,7 @@ function Header() {
                 color="default"
               />
             }
-            label={darkMode ? "🌙" : "☀️"}
+            label={darkMode ? '🌙' : '☀️'}
           />
         </Toolbar>
       </Container>

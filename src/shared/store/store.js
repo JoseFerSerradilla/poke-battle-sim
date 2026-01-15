@@ -1,58 +1,118 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
-const useStore = create(
-  persist(
-    (set) => ({
-      // Tema
-      darkMode: false,
-      toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+const useStore = create((set) => ({
+  // Estado inicial
+  darkMode: false,
+  teams: [],
+  currentTeam: null,
+  teamListDraft: null,
+  teamPokemonDraft: null,
+  battleState: {
+    isActive: false,
+    opponent: null,
+  },
 
-      // Estado del equipo Pokémon
-      team: [],
+  // Tema
+  toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
 
-      // Acciones para el equipo
-      addPokemonToTeam: (pokemon) =>
-        set((state) => ({
-          team: state.team.length < 6
-            ? [...state.team, pokemon]
-            : state.team
-        })),
+  // Acciones para la lista de equipos
+  createTeam: (name) => {
+    const id = Date.now();
+    const newTeam = { id, name, pokemon: [] };
+    set((state) => ({
+      teams: [...state.teams, newTeam],
+      currentTeam: newTeam,
+    }));
+    return id;
+  },
 
-      removePokemonFromTeam: (pokemonId) =>
-        set((state) => ({
-          team: state.team.filter(pokemon => pokemon.id !== pokemonId)
-        })),
+  updateTeamName: (teamId, name) =>
+    set((state) => ({
+      teams: state.teams.map((team) =>
+        team.id === teamId ? { ...team, name } : team,
+      ),
+      currentTeam: state.currentTeam?.id === teamId
+        ? { ...state.currentTeam, name }
+        : state.currentTeam,
+    })),
 
-      clearTeam: () => set({ team: [] }),
+  reorderTeams: (teams) =>
+    set({ teams }),
 
-      // Estado de la batalla
+  deleteTeam: (teamId) =>
+    set((state) => ({
+      teams: state.teams.filter((team) => team.id !== teamId),
+      currentTeam: state.currentTeam?.id === teamId ? null : state.currentTeam,
+    })),
+
+  // Acciones para el equipo actual
+  setCurrentTeam: (teamId) =>
+    set((state) => ({
+      currentTeam: state.teams.find((team) => team.id === teamId),
+    })),
+
+  updateTeamPokemon: (teamId, pokemon) =>
+    set((state) => ({
+      teams: state.teams.map((team) =>
+        team.id === teamId ? { ...team, pokemon } : team,
+      ),
+      currentTeam: state.currentTeam?.id === teamId
+        ? { ...state.currentTeam, pokemon }
+        : state.currentTeam,
+    })),
+
+  // Acciones para los borradores
+  saveTeamListDraft: (teams) =>
+    set({ teamListDraft: teams }),
+
+  saveTeamPokemonDraft: (teamId, pokemon) =>
+    set({ teamPokemonDraft: { teamId, pokemon } }),
+
+  discardTeamListDraft: () =>
+    set({ teamListDraft: null }),
+
+  discardTeamPokemonDraft: () =>
+    set({ teamPokemonDraft: null }),
+
+  restoreTeamListDraft: () =>
+    set((state) => ({
+      teams: state.teamListDraft || state.teams,
+      teamListDraft: null,
+    })),
+
+  restoreTeamPokemonDraft: () =>
+    set((state) => {
+      if (!state.teamPokemonDraft) return state;
+      return {
+        teams: state.teams.map((team) =>
+          team.id === state.teamPokemonDraft.teamId
+            ? { ...team, pokemon: state.teamPokemonDraft.pokemon }
+            : team,
+        ),
+        currentTeam: state.currentTeam?.id === state.teamPokemonDraft.teamId
+          ? { ...state.currentTeam, pokemon: state.teamPokemonDraft.pokemon }
+          : state.currentTeam,
+        teamPokemonDraft: null,
+      };
+    }),
+
+  // Acciones para la batalla
+  startBattle: (opponent) =>
+    set({
+      battleState: {
+        isActive: true,
+        opponent,
+      },
+    }),
+
+  endBattle: () =>
+    set({
       battleState: {
         isActive: false,
         opponent: null,
       },
-
-      // Acciones para la batalla
-      startBattle: (opponent) =>
-        set({
-          battleState: {
-            isActive: true,
-            opponent,
-          }
-        }),
-
-      endBattle: () =>
-        set({
-          battleState: {
-            isActive: false,
-            opponent: null,
-          }
-        }),
     }),
-    {
-      name: 'pokemon-battle-storage',
-    }
-  )
+}),
 );
 
 export default useStore;
