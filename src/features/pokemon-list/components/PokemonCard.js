@@ -15,12 +15,19 @@ import { pokeApi } from '../../../shared/services/pokeApi';
 import { getTypeColor } from '../utils/typeColors';
 
 function PokemonCard({ pokemon, onAddToTeam, isInTeam, canAddToTeam, showTeamActions = true }) {
+  // Si pokemon ya tiene todos los datos (viene de PokemonList), usarlos directamente
+  const hasFullData = pokemon.types && pokemon.stats && pokemon.sprite;
+
   const { data, isLoading } = useQuery({
     queryKey: ['pokemonDetails', pokemon.name],
     queryFn: () => pokeApi.getPokemonDetails(pokemon.name),
+    enabled: !hasFullData, // Solo hacer query si no tenemos los datos completos
   });
 
-  if (isLoading) {
+  // Usar los datos que ya tenemos o los que vinieron de la query
+  const pokemonData = hasFullData ? pokemon : data;
+
+  if (!hasFullData && isLoading) {
     return (
       <Card
         sx={{
@@ -35,31 +42,51 @@ function PokemonCard({ pokemon, onAddToTeam, isInTeam, canAddToTeam, showTeamAct
     );
   }
 
-  if (!data) {
+  if (!pokemonData) {
     return null;
   }
 
   const handleAddToTeam = () => {
     if (canAddToTeam && !isInTeam) {
-      onAddToTeam({
-        id: data.id,
-        name: data.name,
-        types: data.types.map((t) => t.type.name),
-        sprite: data.sprites.front_default,
-        stats: data.stats.reduce((acc, stat) => ({
-          ...acc,
-          [stat.stat.name]: stat.base_stat,
-        }), {}),
-      });
+      // Si ya tenemos el formato correcto, usarlo directamente
+      if (hasFullData) {
+        onAddToTeam(pokemon);
+      } else {
+        // Si no, transformar los datos de la API
+        onAddToTeam({
+          id: pokemonData.id,
+          name: pokemonData.name,
+          types: pokemonData.types.map((t) => t.type.name),
+          sprite: pokemonData.sprites.front_default,
+          stats: pokemonData.stats.reduce((acc, stat) => ({
+            ...acc,
+            [stat.stat.name]: stat.base_stat,
+          }), {}),
+        });
+      }
     }
   };
+
+  // Obtener sprite y tipos según el formato de datos
+  const sprite = hasFullData ? pokemonData.sprite : pokemonData.sprites.front_default;
+  const types = hasFullData
+    ? pokemonData.types.map(typeName => ({ type: { name: typeName } }))
+    : pokemonData.types;
+
+  // Obtener estadísticas según el formato
+  const attack = hasFullData
+    ? pokemonData.stats.attack
+    : pokemonData.stats.find((stat) => stat.stat.name === 'attack')?.base_stat;
+  const defense = hasFullData
+    ? pokemonData.stats.defense
+    : pokemonData.stats.find((stat) => stat.stat.name === 'defense')?.base_stat;
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <CardMedia
         component="img"
         height="140"
-        image={data.sprites.front_default}
+        image={sprite}
         alt={pokemon.name}
         sx={{ objectFit: 'contain', bgcolor: 'background.paper' }}
       />
@@ -73,7 +100,7 @@ function PokemonCard({ pokemon, onAddToTeam, isInTeam, canAddToTeam, showTeamAct
           {pokemon.name}
         </Typography>
         <Box sx={{ display: 'flex', gap: 0.5, mb: 1, flexWrap: 'wrap' }}>
-          {data.types.map((type) => (
+          {types.map((type) => (
             <Chip
               key={type.type.name}
               label={type.type.name}
@@ -88,10 +115,10 @@ function PokemonCard({ pokemon, onAddToTeam, isInTeam, canAddToTeam, showTeamAct
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           <Typography variant="body2">
-            Ataque: {data.stats.find((stat) => stat.stat.name === 'attack')?.base_stat}
+            Ataque: {attack}
           </Typography>
           <Typography variant="body2">
-            Defensa: {data.stats.find((stat) => stat.stat.name === 'defense')?.base_stat}
+            Defensa: {defense}
           </Typography>
         </Box>
       </CardContent>

@@ -17,15 +17,39 @@ function PokemonList({ showTeamActions = false }) {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['pokemonList'],
-    queryFn: () => pokeApi.getPokemonList(151, 0), // Primera generación
+    queryFn: async () => {
+      // Obtener lista inicial
+      const list = await pokeApi.getPokemonList(151, 0);
+
+      // Obtener detalles de todos los Pokémon
+      const detailsPromises = list.results.map(pokemon =>
+        pokeApi.getPokemonDetails(pokemon.name)
+      );
+
+      const allDetails = await Promise.all(detailsPromises);
+
+      // Transformar a formato consistente
+      return allDetails.map(details => ({
+        id: details.id,
+        name: details.name,
+        types: details.types.map(t => t.type.name),
+        sprite: details.sprites.front_default,
+        stats: details.stats.reduce((acc, stat) => ({
+          ...acc,
+          [stat.stat.name]: stat.base_stat,
+        }), {}),
+      }));
+    },
+    staleTime: 1000 * 60 * 5, // Cache por 5 minutos
   });
 
   const filteredPokemon = useMemo(() => {
-    if (!data?.results) return [];
+    if (!data) return [];
 
-    return data.results.filter((pokemon) => {
+    return data.filter((pokemon) => {
       const matchesSearch = pokemon.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesTypes = selectedTypes.length === 0 || true; // TODO: Implementar filtro por tipos
+      const matchesTypes = selectedTypes.length === 0 ||
+        selectedTypes.some(selectedType => pokemon.types.includes(selectedType));
       return matchesSearch && matchesTypes;
     });
   }, [data, searchTerm, selectedTypes]);

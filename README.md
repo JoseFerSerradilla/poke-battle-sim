@@ -31,11 +31,12 @@ src/
 ## Características
 
 ### Lista de Pokémon
-- Visualización de Pokémon de la primera generación
-- Búsqueda por nombre
-- Filtrado por tipos
-- Visualización de estadísticas básicas
+- Visualización de Pokémon de la primera generación (151 Pokémon)
+- Búsqueda por nombre en tiempo real
+- Filtrado por tipos (funcional - permite múltiples tipos)
+- Visualización de estadísticas básicas (Ataque, Defensa)
 - Integración con el constructor de equipos
+- Carga optimizada con caché de 5 minutos
 
 ### Constructor de Equipos
 - Gestión de múltiples equipos
