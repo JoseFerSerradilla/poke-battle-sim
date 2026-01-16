@@ -60,9 +60,12 @@ function PokemonOption({ option, ...props }) {
 
 function PokemonSelector({ open, onClose, onSelect, currentTeam }) {
   const [selectedPokemon, setSelectedPokemon] = useState(null);
-  const { data: pokemonList } = useQuery({
-    queryKey: ['pokemonList'],
+
+  // Obtener lista básica de Pokémon (solo nombres)
+  const { data: pokemonListData } = useQuery({
+    queryKey: ['pokemonListBasic'],
     queryFn: () => pokeApi.getPokemonList(151, 0),
+    staleTime: 1000 * 60 * 5, // Cache por 5 minutos
   });
 
   const { data: pokemonDetails, isLoading: isLoadingDetails } = useQuery({
@@ -91,7 +94,8 @@ function PokemonSelector({ open, onClose, onSelect, currentTeam }) {
     }
   };
 
-  const availablePokemon = pokemonList?.results.filter(
+  // Filtrar Pokémon disponibles (los que no están en el equipo actual)
+  const availablePokemon = pokemonListData?.results?.filter(
     (pokemon) => !currentTeam?.pokemon.some((p) => p.name === pokemon.name),
   ) || [];
 
