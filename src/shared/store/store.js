@@ -97,19 +97,62 @@ const useStore = create((set) => ({
     }),
 
   // Acciones para la batalla
-  startBattle: (opponent) =>
+  battleState: {
+    team1: null,
+    team2: null,
+    isInProgress: false,
+    currentRound: 0,
+    rounds: [],
+    winner: null,
+  },
+
+  setBattleTeams: (team1, team2) =>
     set({
       battleState: {
-        isActive: true,
-        opponent,
+        team1,
+        team2,
+        isInProgress: false,
+        currentRound: 0,
+        rounds: [],
+        winner: null,
       },
     }),
 
-  endBattle: () =>
+  startBattle: () =>
+    set((state) => ({
+      battleState: {
+        ...state.battleState,
+        isInProgress: true,
+      },
+    })),
+
+  addBattleRound: (roundResult) =>
+    set((state) => ({
+      battleState: {
+        ...state.battleState,
+        rounds: [...state.battleState.rounds, roundResult],
+        currentRound: state.battleState.currentRound + 1,
+      },
+    })),
+
+  endBattle: (winner) =>
+    set((state) => ({
+      battleState: {
+        ...state.battleState,
+        isInProgress: false,
+        winner,
+      },
+    })),
+
+  resetBattle: () =>
     set({
       battleState: {
-        isActive: false,
-        opponent: null,
+        team1: null,
+        team2: null,
+        isInProgress: false,
+        currentRound: 0,
+        rounds: [],
+        winner: null,
       },
     }),
 }),

@@ -45,11 +45,21 @@ src/
 - Sistema de borradores automáticos
 - Guardado y restauración de borradores
 
-### Simulador de Batalla (Próximamente)
-- Combates entre equipos
-- Sistema de turnos
-- Cálculo de daño
-- Historial de combates
+### Simulador de Batalla
+- Selección de dos equipos para combate
+- Sistema de combate automático por turnos
+- Combates 1 vs 1 por posición en el equipo
+- Lógica de combate basada en estadísticas:
+  - El Pokémon con mayor velocidad ataca primero
+  - Si el ataque supera la defensa del oponente, este queda debilitado
+  - Si no supera la defensa, el oponente contraataca
+  - Si ninguno supera la defensa del otro, gana el más rápido
+- El ganador de cada combate continúa contra el siguiente Pokémon rival
+- Resultados detallados:
+  - Ganador de cada ronda con explicación
+  - Estadísticas globales de cada equipo
+  - Pokémon con vida y debilitados
+- Historial completo de combates con estadísticas
 
 ## Instalación
 
@@ -92,7 +102,79 @@ La aplicación utiliza React Router DOM para la navegación entre las diferentes
 
 - `/`: Lista de Pokémon
 - `/teams`: Constructor de Equipos
-- `/battle`: Simulador de Batalla (Próximamente)
+- `/battle`: Simulador de Batalla
+
+## Testing
+
+El proyecto incluye una cobertura completa de tests unitarios para el simulador de batalla, asegurando la calidad y funcionamiento correcto de toda la funcionalidad.
+
+### Tests Implementados
+
+#### Tests de Lógica Funcional (12 tests)
+**Archivo**: `src/features/battle-simulator/utils/battleLogic.test.js`
+
+Tests para la lógica de combate:
+- ✅ Verificación de que el Pokémon más rápido ataca primero
+- ✅ Validación de victoria por superación de ataque vs defensa
+- ✅ Caso especial: victoria por velocidad cuando ninguno supera la defensa
+- ✅ Correcto retorno de estadísticas de ambos Pokémon
+- ✅ Manejo de velocidades iguales
+
+Tests para batallas completas:
+- ✅ Simulación de batalla completa entre equipos
+- ✅ Estructura correcta de rondas con toda la información
+- ✅ Determinación correcta del equipo ganador
+- ✅ Cálculo preciso de estadísticas (vivos/debilitados)
+- ✅ El ganador continúa contra el siguiente Pokémon
+- ✅ Finalización correcta cuando un equipo se queda sin Pokémon
+- ✅ Manejo de equipos con un solo Pokémon
+
+#### Tests de Interfaz de Usuario (17 tests)
+
+**TeamSelector** (`src/features/battle-simulator/components/TeamSelector.test.js`):
+- ✅ Renderizado correcto del componente
+- ✅ Visualización del título y descripción
+- ✅ Botón de batalla presente y funcional
+- ✅ Estado inicial correcto (botón deshabilitado)
+
+**BattleResults** (`src/features/battle-simulator/components/BattleResults.test.js`):
+- ✅ Visualización del resultado global con equipo ganador
+- ✅ Alternancia correcta del ganador (equipo 1 o 2)
+- ✅ Estadísticas de ambos equipos mostradas correctamente
+- ✅ Historial de combates con número correcto de rondas
+- ✅ Detalles de cada ronda con nombres de Pokémon
+- ✅ Estadísticas de Pokémon en cada ronda
+- ✅ Razones del resultado de cada combate
+- ✅ Botón "Nueva Batalla" presente y funcional
+- ✅ Callback onReset ejecutado correctamente
+- ✅ Indicadores visuales del ganador (trofeos)
+- ✅ Visualización correcta del VS entre Pokémon
+- ✅ Manejo de batalla con una sola ronda
+- ✅ Renderizado de imágenes de Pokémon
+
+### Ejecución de Tests
+
+```bash
+# Ejecutar todos los tests
+npm test
+
+# Ejecutar tests del simulador de batalla
+npm test -- --testPathPattern=battle-simulator
+
+# Ejecutar tests con cobertura
+npm test -- --coverage
+
+# Ejecutar tests en modo watch
+npm test -- --watch
+```
+
+### Resultado de Tests
+
+```
+Test Suites: 3 passed, 3 total
+Tests:       29 passed, 29 total
+Snapshots:   0 total
+```
 
 ## Desarrollo
 
