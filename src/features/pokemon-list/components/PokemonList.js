@@ -11,7 +11,7 @@ import SearchFilters from './SearchFilters';
 
 function PokemonList({ showTeamActions = false }) {
   const navigate = useNavigate();
-  const { teams, currentTeam, updateTeam, saveTeamDraft } = useStore();
+  const { teams, currentTeam, updateTeamPokemon, saveTeamPokemonDraft } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTypes, setSelectedTypes] = useState([]);
 
@@ -65,8 +65,8 @@ function PokemonList({ showTeamActions = false }) {
     }
 
     const updatedPokemon = [...currentTeam.pokemon, pokemon];
-    updateTeam(currentTeam.id, updatedPokemon);
-    saveTeamDraft(currentTeam.id, updatedPokemon);
+    updateTeamPokemon(currentTeam.id, updatedPokemon);
+    saveTeamPokemonDraft(currentTeam.id, updatedPokemon);
   };
 
   if (isLoading) {

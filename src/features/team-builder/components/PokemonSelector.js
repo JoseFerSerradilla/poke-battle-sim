@@ -113,21 +113,7 @@ function PokemonSelector({ open, onClose, onSelect, currentTeam }) {
               <TextField {...params} label="Selecciona un Pokémon" />
             )}
             renderOption={(props, option) => (
-              <Box component="li" {...props} sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography sx={{ textTransform: 'capitalize' }}>
-                  {option.name}
-                </Typography>
-                <Box sx={{ flexGrow: 1 }} />
-                <Chip
-                  label="Grass"
-                  size="small"
-                  sx={{
-                    bgcolor: getTypeColor('grass'),
-                    color: 'white',
-                    textTransform: 'capitalize',
-                  }}
-                />
-              </Box>
+              <PokemonOption option={option} {...props} />
             )}
             isOptionEqualToValue={(option, value) => option.name === value.name}
           />

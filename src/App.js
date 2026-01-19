@@ -1,4 +1,4 @@
-import { Container } from '@mui/material';
+import { Container, CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
@@ -20,6 +20,7 @@ function App() {
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
+          <CssBaseline />
           <Layout>
             <Container maxWidth="lg" sx={{ py: 4 }}>
               <Routes>

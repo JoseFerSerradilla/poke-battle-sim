@@ -8,8 +8,12 @@ const useStore = create((set) => ({
   teamListDraft: null,
   teamPokemonDraft: null,
   battleState: {
-    isActive: false,
-    opponent: null,
+    team1: null,
+    team2: null,
+    isInProgress: false,
+    currentRound: 0,
+    rounds: [],
+    winner: null,
   },
 
   // Tema
@@ -97,15 +101,6 @@ const useStore = create((set) => ({
     }),
 
   // Acciones para la batalla
-  battleState: {
-    team1: null,
-    team2: null,
-    isInProgress: false,
-    currentRound: 0,
-    rounds: [],
-    winner: null,
-  },
-
   setBattleTeams: (team1, team2) =>
     set({
       battleState: {

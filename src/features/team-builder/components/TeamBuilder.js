@@ -95,8 +95,8 @@ function TeamBuilder() {
             variant="contained"
             onClick={handleCreateTeam}
             disabled={!newTeamName.trim()}
-            color="error"
-            sx={{ height: 40, bgcolor: '#dc004e', '&:hover': { bgcolor: '#b71c1c' } }}
+            color="primary"
+            sx={{ height: 40 }}
           >
             Crear Equipo
           </Button>
